@@ -1,25 +1,34 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { sidebarItems } from "../data/SidebarItems";
 import Link from "next/link";
 
 const Sidebar = () => {
   const [openItems, setOpenItems] = useState({}); // Use an object to track open states for each section
 
-  const handleToggle = (sectionIndex, itemIndex) => {
-    setOpenItems((prevState) => {
-      const sectionKey = `${sectionIndex}-${itemIndex}`;
-      const newState = { ...prevState };
+  // const handleToggle = (sectionIndex, itemIndex) => {
+  //   setOpenItems((prevState) => {
+  //     const sectionKey = `${sectionIndex}-${itemIndex}`;
+  //     const newState = { ...prevState };
 
-      if (newState[sectionKey]) {
-        delete newState[sectionKey]; // Close if already open
-      } else {
-        newState[sectionKey] = true; // Open if not already open
-      }
+  //     if (newState[sectionKey]) {
+  //       delete newState[sectionKey]; // Close if already open
+  //     } else {
+  //       newState[sectionKey] = true; // Open if not already open
+  //     }
 
-      return newState;
-    });
-  };
+  //     return newState;
+  //   });
+  // };
+  const handleToggle = useCallback((sectionIndex, itemIndex) => {
+    const sectionKey = `${sectionIndex}-${itemIndex}`;
+  
+    setOpenItems((prevState) => ({
+      ...prevState,
+      [sectionKey]: !prevState[sectionKey],
+    }));
+  }, [setOpenItems]);
+
 
   return (
     <div className="w-[250px] bg-gray-50 h-[990px] overflow-y-auto custom-scrollbar p-5 ">
@@ -30,7 +39,7 @@ const Sidebar = () => {
             {sidebar?.items && (
               <div>
                 {sidebar?.items?.map((item, itemIndex) => {
-                  const sectionKey = `${sidebarIndex}-${itemIndex}`; // Key for each item
+               const sectionKey = `${sidebarIndex}-${itemIndex}`; // Key for each item
 
                   return (
                     <div key={itemIndex}>
