@@ -62,7 +62,7 @@ const [selectChild,setSelectChild] = useState(null)
                               className={` ${
                                 open
                                   ? "invisible opacity-0 hidden"
-                                  : "visible opacity-100"
+                                  : "visible opacity-100 block" 
                               }   transition-all ease-in-out duration-200 text-sm leading-5 font-medium    -tracking-[0.28px] ${
                                 openItem === uniqueKey
                                   ? "text-blue-500"
