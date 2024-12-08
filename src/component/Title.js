@@ -1,10 +1,11 @@
 import React from 'react';
 
-const Title = () => {
+const Title = ({open,setOpen}) => {
+  
     return (
-        <div className='text-center text-4xl font-bold '>
-            useCallback function
-        </div>
+       <div onClick = {()=>setOpen(!open)} className='text-center bg-red-500 w-20 mx-auto'>
+        click
+       </div>
     );
 };
 
