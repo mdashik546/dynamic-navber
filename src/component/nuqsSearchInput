@@ -1,0 +1,101 @@
+"use client"
+import { useCallback, useEffect, useRef, useState, useTransition } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { SearchIconTwo } from "@/assets/icons"
+
+const SearchServerParams = ({ title, inputClass, titleClass, divClass }) => {
+  const [inputValue, setInputValue] = useState("")
+  const [debouncedValue, setDebouncedValue] = useState("")
+  const [mounted, setMounted] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+  const [isPending, startTransition] = useTransition()
+  const searchRef = useRef(null);
+
+
+  const handleSearchParams = useCallback(
+    (debouncedValue) => {
+      let params = new URLSearchParams(window.location.search)
+      if (debouncedValue.length > 0) {
+        params.set("q", debouncedValue)
+      } else {
+        params.delete("q")
+      }
+      startTransition(() => {
+        router.replace(`${pathname}?${params.toString()}`)
+      })
+    },
+    [pathname, router]
+  )
+
+  // EFFECT: Set Initial Params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const searchQuery = params.get("q") ?? ""
+    setInputValue(searchQuery)
+  }, [])
+
+  // EFFECT: Set Mounted
+  useEffect(() => {
+    if (debouncedValue.length > 0 && !mounted) {
+      setMounted(true)
+    }
+  }, [debouncedValue, mounted])
+
+  // EFFECT: Debounce Input Value
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(inputValue)
+    }, 500)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [inputValue])
+
+  // EFFECT: Search Params
+  useEffect(() => {
+    if (mounted) handleSearchParams(debouncedValue)
+  }, [debouncedValue, handleSearchParams, mounted])
+
+  return (
+
+    <div>
+      <div className={`py-[11px] px-2.5  ${divClass}`}>
+        <div>
+          <div className={`flex justify-between items-center ${inputClass}`}>
+            <h3
+              className={`text-black-80 text-sm font-medium leading-[18.2px] ${titleClass}`}
+            >
+              {title}
+            </h3>
+            <div className="flex gap-3">
+              <div className="relative">
+                <input
+                  value={inputValue || ''}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  ref={searchRef}
+                  className="border-[0.5px] border-blue-100 rounded w-[180px] h-7 outline-none pl-7 pr-2 text-xs font-normal text-blue-100 placeholder:text-blue-100"
+                  type="text"
+                  placeholder="Search.."
+                />
+                <button
+                  onClick={() => searchRef.current.focus()}
+                  className="absolute left-2 top-[8.62px]"
+                >
+                  <SearchIconTwo />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute ">
+        {isPending && "loading"}
+      </div>
+    </div>
+
+  )
+}
+
+export default SearchServerParams
